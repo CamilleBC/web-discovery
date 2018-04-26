@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Periodic Table</title>
+		 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
+		<link href="https://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet"> 
+		<style>
+			/********************/
+			/*      Layout      */
+			/********************/
+			body {
+				background-image: url("./science.jpg");
+				background-repeat: no-repeat;
+				background-position: initial;
+				background-size: cover;
+				display: grid;
+				grid-template-columns: repeat(20, 1fr);
+				grid-template-rows: repeat(13, 1fr);
+				grid-template-areas:
+				"head   head    head    head    head    head    head    head    head    head    head    head    head    head    head    head    head    head    head    head"
+				"head   head    head    head    head    head    head    head    head    head    head    head    head    head    head    head    head    head    head    head"
+				"left   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   right"
+				"left   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   right"
+				"left   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   right"
+				"left   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   right"
+				"left   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   right"
+				"left   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   right"
+				"left   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   right"
+				"left   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   right"
+				"left   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   right"
+				"left   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   table   right"
+				"foot   foot    foot    foot    foot    foot    foot    foot    foot    foot    foot    foot    foot    foot    foot    foot    foot    foot    foot    foot";
+				min-height: 100vh;
+				max-height: 100vh;
+				min-width: 100hh;
+			}
+			.head {
+				align-items: center;
+				justify-content: center;
+				grid-area: head;
+			}
+			.table {
+				background-color: rgb(60, 176, 255, 0.5);
+				grid-area: table;
+			}
+			.row {
+				display: flex;
+				flex: 1;
+				flex-flow: row nowrap;
+				grid-column: 2 / 20;
+			}
+			.row1 { grid-row: 3 / span 1; }
+			.row2 { grid-row: 4 / span 1; }
+			.row3 { grid-row: 5 / span 1; }
+			.row4 { grid-row: 6 / span 1; }
+			.row5 { grid-row: 7 / span 1; }
+			.row6 { grid-row: 8; / span 1 }
+			.row7 { grid-row: 9 / span 1; }
+			.row8 { grid-row: 10 / span 1; }
+			.row9 { grid-row: 11 / span 1; }
+			.row10 { grid-row: 12 / span 1; }
+			.row11 { grid-row: 13 / span 1; }
+			.elmt {
+				display: flex;
+				flex: 1;
+				justify-content: center;
+				align-items: center;
+				margin: 5px;
+				border-radius: 15px 25px;
+				border: 2px solid gray;
+				box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+				cursor: pointer;
+				background-color: rgb(60, 249, 255);
+				opacity: 0.7;
+				max-width: 100px;
+				max-height: 70px;
+				transition: transform .5s;
+				transition-timing-function: ease-out;
+			}
+			.elmt:hover {
+				border-color: rgba(0,0,0,0.1);
+				opacity: 0.9;
+				transform: scale(3, 3);
+			}
+			.empty {
+				display: flex;
+				margin: 6px;
+				flex: 1;
+			}
+			.number {
+				position: absolute;
+				z-index: 1;
+				top: 0.5vh;
+				right: 0.5vw;
+			}
+			.details {
+				position: relative;
+				bottom: 1vh;
+			}
+			.symbol {
+				position: relative;
+				z-index: 2;
+				top: 0px;
+				bottom: 0px;
+			}
+			/********************/
+			/* Element classes  */
+			/********************/
+			.alkali_metal {
+				background-color: rgb(13, 204, 100);
+			}
+			.alkaline_earth_metal {
+				background-color: rgb(104, 133, 255, 0.8);
+			}
+			.actinide {
+				background-color: rgb(104, 133, 255, 0.8);
+			}
+			.lanthanide {
+				background-color: rgb(104, 133, 255, 0.8);
+			}
+			.metalloid {
+				background-color: rgb(104, 133, 255, 0.8);
+			}
+			.noble_gas {
+				background-color: rgb(104, 133, 255, 0.8);
+			}
+			.post_transition_metal {
+				background-color: rgb(104, 133, 255, 0.8);
+			}
+			.reactive_nonmetal {
+				background-color: rgb(104, 133, 255);
+			}
+			.transition_metal {
+				background-color: rgb(104, 133, 255, 0.8);
+			}
+			/********************/
+			/*       Fonts      */
+			/********************/
+			h1 {
+				text-align: center;
+				font-family: 'Indie Flower', cursive;
+				font-size: 8vmin;
+				color: #330000;
+			}
+			p.details {
+				font-family: 'Roboto', sans-serif;
+				font-size: 0.8vmin;
+			}
+			p.symbol {
+				font-family: 'Indie Flower', cursive;
+				font-weight: bolder;
+				font-size: 3vmin;
+			}
+			p.gaz { color: red; }
+			p.liquid { color: blue; }
+		</style>
+	</head>
+	<body>
+		<div class="head">
+			<h1>Table de Mendeleïev</hl>
+		</div>
+		<div class="table"></div>
+		<div class="row row1">
+			<div class="elmt reactive_nonmetal">
+				<div class="number"><p class="details">1</p></div>
+				<div class="symbol"><p class="symbol gaz">H</p></div>
+			</div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="elmt">
+				<p>18</p>
+			</div>
+		</div>
+		<div class="row row2">
+			<div class="elmt alkali_metal">
+				<p>1</p>
+			</div>
+			<div class="elmt">
+				<p>2</p>
+			</div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="elmt">
+				<p>13</p>
+			</div>
+			<div class="elmt">
+				<p>14</p>
+			</div>
+			<div class="elmt">
+				<p>15</p>
+			</div>
+			<div class="elmt">
+				<p>16</p>
+			</div>
+			<div class="elmt">
+				<p>17</p>
+			</div>
+			<div class="elmt">
+				<p>18</p>
+			</div>
+		</div>
+		<div class="row row3">
+			<div class="elmt alkali_metal">
+				<p>1</p>
+			</div>
+			<div class="elmt">
+				<p>2</p>
+			</div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="elmt">
+				<p>13</p>
+			</div>
+			<div class="elmt">
+				<p>14</p>
+			</div>
+			<div class="elmt">
+				<p>15</p>
+			</div>
+			<div class="elmt">
+				<p>16</p>
+			</div>
+			<div class="elmt">
+				<p>17</p>
+			</div>
+			<div class="elmt">
+				<p>18</p>
+			</div>
+		</div>
+		<div class="row row4">
+			<div class="elmt alkali_metal">
+				<p>1</p>
+			</div>
+			<div class="elmt">
+				<p>2</p>
+			</div>
+			<div class="elmt">
+				<p>3</p>
+			</div>
+			<div class="elmt">
+				<p>4</p>
+			</div>
+			<div class="elmt">
+				<p>5</p>
+			</div>
+			<div class="elmt">
+				<p>6</p>
+			</div>
+			<div class="elmt">
+				<p>7</p>
+			</div>
+			<div class="elmt">
+				<p>8</p>
+			</div>
+			<div class="elmt">
+				<p>9</p>
+			</div>
+			<div class="elmt">
+				<p>10</p>
+			</div>
+			<div class="elmt">
+				<p>11</p>
+			</div>
+			<div class="elmt">
+				<p>12</p>
+			</div>
+			<div class="elmt">
+				<p>13</p>
+			</div>
+			<div class="elmt">
+				<p>14</p>
+			</div>
+			<div class="elmt">
+				<p>15</p>
+			</div>
+			<div class="elmt">
+				<p>16</p>
+			</div>
+			<div class="elmt">
+				<p>17</p>
+			</div>
+			<div class="elmt">
+				<p>18</p>
+			</div>
+		</div>
+		<div class="row row5">
+			<div class="elmt alkali_metal">
+				<p>1</p>
+			</div>
+			<div class="elmt">
+				<p>2</p>
+			</div>
+			<div class="elmt">
+				<p>3</p>
+			</div>
+			<div class="elmt">
+				<p>4</p>
+			</div>
+			<div class="elmt">
+				<p>5</p>
+			</div>
+			<div class="elmt">
+				<p>6</p>
+			</div>
+			<div class="elmt">
+				<p>7</p>
+			</div>
+			<div class="elmt">
+				<p>8</p>
+			</div>
+			<div class="elmt">
+				<p>9</p>
+			</div>
+			<div class="elmt">
+				<p>10</p>
+			</div>
+			<div class="elmt">
+				<p>11</p>
+			</div>
+			<div class="elmt">
+				<p>12</p>
+			</div>
+			<div class="elmt">
+				<p>13</p>
+			</div>
+			<div class="elmt">
+				<p>14</p>
+			</div>
+			<div class="elmt">
+				<p>15</p>
+			</div>
+			<div class="elmt">
+				<p>16</p>
+			</div>
+			<div class="elmt">
+				<p>17</p>
+			</div>
+			<div class="elmt">
+				<p>18</p>
+			</div>
+		</div>
+		<div class="row row6">
+			<div class="elmt alkali_metal">
+				<p>1</p>
+			</div>
+			<div class="elmt">
+				<p>2</p>
+			</div>
+			<div class="elmt">
+				<p>3</p>
+			</div>
+			<div class="elmt">
+				<p>4</p>
+			</div>
+			<div class="elmt">
+				<p>5</p>
+			</div>
+			<div class="elmt">
+				<p>6</p>
+			</div>
+			<div class="elmt">
+				<p>7</p>
+			</div>
+			<div class="elmt">
+				<p>8</p>
+			</div>
+			<div class="elmt">
+				<p>9</p>
+			</div>
+			<div class="elmt">
+				<p>10</p>
+			</div>
+			<div class="elmt">
+				<p>11</p>
+			</div>
+			<div class="elmt">
+				<p>12</p>
+			</div>
+			<div class="elmt">
+				<p>13</p>
+			</div>
+			<div class="elmt">
+				<p>14</p>
+			</div>
+			<div class="elmt">
+				<p>15</p>
+			</div>
+			<div class="elmt">
+				<p>16</p>
+			</div>
+			<div class="elmt">
+				<p>17</p>
+			</div>
+			<div class="elmt">
+				<p>18</p>
+			</div>
+		</div>
+		<div class="row row7">
+			<div class="elmt alkali_metal">
+				<p>1</p>
+			</div>
+			<div class="elmt">
+				<p>2</p>
+			</div>
+			<div class="elmt">
+				<p>3</p>
+			</div>
+			<div class="elmt">
+				<p>4</p>
+			</div>
+			<div class="elmt">
+				<p>5</p>
+			</div>
+			<div class="elmt">
+				<p>6</p>
+			</div>
+			<div class="elmt">
+				<p>7</p>
+			</div>
+			<div class="elmt">
+				<p>8</p>
+			</div>
+			<div class="elmt">
+				<p>9</p>
+			</div>
+			<div class="elmt">
+				<p>10</p>
+			</div>
+			<div class="elmt">
+				<p>11</p>
+			</div>
+			<div class="elmt">
+				<p>12</p>
+			</div>
+			<div class="elmt">
+				<p>13</p>
+			</div>
+			<div class="elmt">
+				<p>14</p>
+			</div>
+			<div class="elmt">
+				<p>15</p>
+			</div>
+			<div class="elmt">
+				<p>16</p>
+			</div>
+			<div class="elmt">
+				<p>17</p>
+			</div>
+			<div class="elmt">
+				<p>18</p>
+			</div>
+		</div>
+		<div class="row row8">
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+		</div>
+		<div class="row row9">
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="elmt">
+				<p>4</p>
+			</div>
+			<div class="elmt">
+				<p>5</p>
+			</div>
+			<div class="elmt">
+				<p>6</p>
+			</div>
+			<div class="elmt">
+				<p>7</p>
+			</div>
+			<div class="elmt">
+				<p>8</p>
+			</div>
+			<div class="elmt">
+				<p>9</p>
+			</div>
+			<div class="elmt">
+				<p>10</p>
+			</div>
+			<div class="elmt">
+				<p>11</p>
+			</div>
+			<div class="elmt">
+				<p>12</p>
+			</div>
+			<div class="elmt">
+				<p>13</p>
+			</div>
+			<div class="elmt">
+				<p>14</p>
+			</div>
+			<div class="elmt">
+				<p>15</p>
+			</div>
+			<div class="elmt">
+				<p>16</p>
+			</div>
+			<div class="elmt">
+				<p>17</p>
+			</div>
+			<div class="empty"></div>
+		</div>
+		<div class="row row10">
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="empty"></div>
+			<div class="elmt">
+				<p>4</p>
+			</div>
+			<div class="elmt">
+				<p>5</p>
+			</div>
+			<div class="elmt">
+				<p>6</p>
+			</div>
+			<div class="elmt">
+				<p>7</p>
+			</div>
+			<div class="elmt">
+				<p>8</p>
+			</div>
+			<div class="elmt">
+				<p>9</p>
+			</div>
+			<div class="elmt">
+				<p>10</p>
+			</div>
+			<div class="elmt">
+				<p>11</p>
+			</div>
+			<div class="elmt">
+				<p>12</p>
+			</div>
+			<div class="elmt">
+				<p>13</p>
+			</div>
+			<div class="elmt">
+				<p>14</p>
+			</div>
+			<div class="elmt">
+				<p>15</p>
+			</div>
+			<div class="elmt">
+				<p>16</p>
+			</div>
+			<div class="elmt">
+				<p>17</p>
+			</div>
+			<div class="empty"></div>
+		</div>
+	</body>
+</html>
