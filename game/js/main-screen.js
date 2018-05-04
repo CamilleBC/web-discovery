@@ -1,24 +1,51 @@
+var canvas = document.getElementById("mainScreen");
+var ctx = canvas.getContext("2d");
+
 main();
 
 function main() {
-}
-
-function initGL(canvas) {
-	const gl = canvas.getContext("webgl");
-	if (!gl) {
-		alert("Unable to initialize WebGL. Your browser or machine may not support it.");
+	var ball = {
+		radius: 10,
+		x: (canvas.width/2),
+		y: (canvas.height-30),
+		draw: function(ctx) {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.beginPath();
+			ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+			ctx.fillStyle = "#0095DD";
+			ctx.fill();
+			ctx.closePath();
+		},
+		move: function (dx, dy) {
+			this.x += dx;
+			this.y += dy;
+		},
+		isBouncing: function (coordStr, delta) {
+			var coord = coordStr == "x" ? this.x : this.y;
+			var canvasLimit = coordStr == "x" ? canvas.width : canvas.height;
+			var nextCoordinate = coord + delta;
+			if (nextCoordinate > (canvasLimit - this.radius)
+				|| nextCoordinate < this.radius)
+				return true;
+			return false;
+		}
 	}
-	return gl;
+	setInterval(function() {
+		draw(ctx, ball);
+	}, 10);
 }
 
-function webGLStart() {
-	const canvas = document.querySelector("#glCanvas");
-	// Initialize the GL context
-	const gl = initGL(canvas);
+var dx = 2;
+var dy = -2;
+function draw(ctx, ball) {
+	ball.draw(ctx);
+	if (ball.isBouncing("x", dx))
+		dx = -dx;
+	if (ball.isBouncing("y", dy))
+		dy = -dy;
+	ball.move(dx, dy);
+}
 
-	// Set clear color to black, fully opaque
-	gl.clearColor(100.0, 100.0, 0.0, 1.0);
-	// Clear the color buffer with specified clear color
-	gl.clear(gl.COLOR_BUFFER_BIT);
+function bounce() {
 }
 
