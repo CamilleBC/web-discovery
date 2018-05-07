@@ -45,7 +45,7 @@ class Sphere extends Form {
 		return ret;
 	}
 	isOut() {
-		var nextY =  this.y + this.stepY;
+		let nextY =  this.y + this.stepY;
 		if (nextY > (canvas.height - this.radius))
 			return true;
 		return false;
@@ -92,6 +92,8 @@ class Paddle extends Rectangle {
 	}
 }
 
+main();
+
 function slowDown(ball) {
 	if (Math.abs(ball.stepY) > 2) {
 		ball.stepY /= 1.1;
@@ -104,9 +106,10 @@ function slowDown(ball) {
 	}
 }
 
-main();
 
 function eventHandler() {
+	document.addEventListener("keydown", keyDownHandler, false);
+	document.addEventListener("keyup", keyUpHandler, false);
 }
 
 function keyDownHandler(e) {
@@ -171,9 +174,7 @@ function main() {
 	let paddleY = canvas.height - 20;
 	var ball = new Sphere(ballX, ballY, 10, 2, -2);
 	var paddle = new Paddle(paddleX, paddleY, paddleW, paddleH, 7); 
-
-	document.addEventListener("keydown", keyDownHandler, false);
-	document.addEventListener("keyup", keyUpHandler, false);
+	eventHandler();
 	setInterval(function() {
 		draw(ctx, ball, paddle);
 	}, 10);
