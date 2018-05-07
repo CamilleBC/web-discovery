@@ -11,9 +11,11 @@ class Form {
 }
 
 class Sphere extends Form {
-	constructor(x, y, radius) {
+	constructor(x, y, radius, stepX, stepY) {
 		super(x, y);
 		this.radius = radius;
+		this.stepX = stepX;
+		this.stepY = stepY;
 	}
 	draw(ctx) {
 		ctx.beginPath();
@@ -22,18 +24,32 @@ class Sphere extends Form {
 		ctx.fill();
 		ctx.closePath();
 	}
-	move(dx, dy) {
-		this.x += dx;
-		this.y += dy;
+	move() {
+		this.x += this.stepX;
+		this.y += this.stepY;
 	}
-	isBouncing(coordStr, delta) {
-		var coord = coordStr === "x" ? this.x : this.y;
-		var canvasLimit = coordStr === "x" ? canvas.width : canvas.height;
-		var nextCoordinate = coord + delta;
-		if (nextCoordinate > (canvasLimit - this.radius)
-			|| nextCoordinate < this.radius)
+	bounceWall() {
+		let nextX = this.x + this.stepX;
+		let nextY =  this.y + this.stepY;
+		let leftWall = canvas.width - this.radius; 
+		let ret = false;
+
+		if (nextX > leftWall || nextX < this.radius) {
+			this.stepX = -this.stepX;
+			ret = true;
+		}
+		if (nextY < this.radius) { 
+			this.stepY = -this.stepY;
+			ret = true;
+		}
+		return ret;
+	}
+	isOut() {
+		var nextY =  this.y + this.stepY;
+		if (nextY > (canvas.height - this.radius))
 			return true;
 		return false;
+
 	}
 }
 
@@ -49,18 +65,42 @@ class Rectangle extends Form {
 		ctx.fillRect(this.x, this.y, this.width, this.height);
 		ctx.closePath();
 	}
-	move(direction, step) {
-		var rightLimit = canvas.width - this.width;
-		var leftLimit = 0;
-		console.log("IN PADDLE");
+}
+
+class Paddle extends Rectangle {
+	constructor(x, y, width, height, step) {
+		super(x, y, width, height);
+		this.step = step;
+	}
+	input() {
+		if (rightPressed) {
+			this.move(true, this.step);
+		} else if (leftPressed) {
+			this.move(false, this.step);
+		}
+	}
+	move(direction) {
+		let rightLimit = canvas.width - this.width;
+		let leftLimit = 0;
+
 		if (direction === true && this.x < rightLimit) {
-			this.x += step;
-			console.log("X Paddle: " + this.x);
+			this.x += this.step;
 		}
 		if (direction === false && this.x > leftLimit) {
-			this.x -= step;
-			console.log("RIGHT PADDLE");
+			this.x -= this.step;
 		}
+	}
+}
+
+function slowDown(ball) {
+	if (Math.abs(ball.stepY) > 2) {
+		ball.stepY /= 1.1;
+		ball.stepX /= 1.1;
+		setTimeout(slowDown, 100, ball);
+	} else if (ball.stepY <= 0) {
+		ball.stepY = -2;
+	} else {
+		ball.stepX = 2;
 	}
 }
 
@@ -72,49 +112,66 @@ function eventHandler() {
 function keyDownHandler(e) {
 	if(e.keyCode == 39) {
 		rightPressed = true;
-		console.log("Right true");
 	}
 	else if(e.keyCode == 37) {
 		leftPressed = true;
-		console.log("Left true");
 	}
 }
 
 function keyUpHandler(e) {
 	if(e.keyCode == 39) {
 		rightPressed = false;
-		console.log("Right false");
 	}
 	else if(e.keyCode == 37) {
 		leftPressed = false;
-		console.log("Left false");
 	}
 }
 
-var dx = 2;
-var dy = -2;
 function draw(ctx, ball, paddle) {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	paddle.draw(ctx);
-	if (rightPressed) {
-		paddle.move(true, 7);
-		console.log("Right move");
-	} else if (leftPressed) {
-		paddle.move(false, 7);
-		console.log("Left move");
+	paddle.input();
+	if (!ball.bounceWall()) {
+		if (!bouncePaddle(ball, paddle)) {
+			if (ball.isOut()) {
+				alert("GameOver");
+				document.location.reload();
+			} 
+		} 
 	}
 	ball.draw(ctx);
-	if (ball.isBouncing("x", dx))
-		dx = -dx;
-	if (ball.isBouncing("y", dy))
-		dy = -dy;
-	ball.move(dx, dy);
+	ball.move();
+}
+
+function bouncePaddle(ball, paddle) {
+	let ballRight = ball.x + ball.radius;
+	let ballBottom = ball.y + ball.radius;
+	let paddleRight = paddle.x + paddle.width;
+	let ballOnPaddle = paddle.y - ball.radius ;
+
+	if ((ball.x > paddle.x && ball.x < paddleRight)
+		&& (ballBottom >= paddle.y)) {
+		if (ballBottom > paddle.y) {
+			ball.y = ballOnPaddle;
+		}
+		ball.stepY = -ball.stepY * 2;
+		ball.stepX = ball.stepX * 2;
+		setTimeout(slowDown, 300, ball);
+		return true;
+	}
+	return false;
 }
 
 function main() {
-	var ball = new Sphere(canvas.width/2, canvas.height-30, 10);
-	var width = 75;
-	var paddle = new Rectangle((canvas.width-width)/2, canvas.height-20, width, 10); 
+	let ballX = canvas.width / 2;
+	let ballY = canvas.height - 40;
+	let paddleW = 75;
+	let paddleH = 10;
+	let paddleX = (canvas.width - paddleW) / 2;
+	let paddleY = canvas.height - 20;
+	var ball = new Sphere(ballX, ballY, 10, 2, -2);
+	var paddle = new Paddle(paddleX, paddleY, paddleW, paddleH, 7); 
+
 	document.addEventListener("keydown", keyDownHandler, false);
 	document.addEventListener("keyup", keyUpHandler, false);
 	setInterval(function() {
