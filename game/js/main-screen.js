@@ -104,9 +104,11 @@ function main() {
 	let paddleY = canvas.height - 20;
 	var ball = new Sphere(ballX, ballY, 10, 2, -2);
 	var paddle = new Paddle(paddleX, paddleY, paddleW, paddleH, 7); 
+	var bricks = [];
+	buildBricks(bricks, 2, 3);
 	eventHandler();
 	setInterval(function() {
-		draw(ctx, ball, paddle);
+		draw(ctx, ball, paddle, bricks);
 	}, 10);
 }
 
@@ -135,7 +137,7 @@ function keyUpHandler(e) {
 }
 
 /*************************** Drawing functions ********************************/
-function draw(ctx, ball, paddle) {
+function draw(ctx, ball, paddle, bricks) {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	paddle.draw(ctx);
 	paddle.input();
@@ -147,11 +149,42 @@ function draw(ctx, ball, paddle) {
 			} 
 		} 
 	}
+	drawBricks(bricks,ctx);
 	ball.draw(ctx);
 	ball.move();
 }
 
+function drawBricks(bricks, ctx) {
+	bricks.forEach( function(column) {
+		column.forEach( function(brick) {
+			brick.draw(ctx);
+		});
+	});
+}
+
 /**************************** Forms functions *********************************/
+// Build bricks by sizing, spacing them depending on the number or col and rows
+function buildBricks(bricks, bricksColumns, bricksRows) {
+	let wPercent = percentage => (canvas.width / 100) * percentage;
+	let hPercent = percentage => (canvas.height / 100) * percentage;
+	let padding = wPercent(10) / bricksColumns;
+	let w = (wPercent(80) / bricksColumns);
+	console.log(w);
+	let h = (canvas.height / 100) * bricksRows;
+	let offsetTop = hPercent(8);
+	let offsetLeft = wPercent(10);
+
+
+	for (var col = 0; col < bricksColumns; ++col) {
+		bricks[col] = [];
+		for (let row = 0; row < bricksRows; ++row) {
+			let x = (col * (w + padding)) + offsetLeft;
+			let y = (row * (h + padding)) + offsetTop;
+			bricks[col][row] = new Rectangle(x, y, w, h);
+		}
+	}
+}
+
 function slowDown(ball) {
 	if (Math.abs(ball.stepY) > 2) {
 		ball.stepY /= 1.1;
