@@ -92,21 +92,25 @@ class Paddle extends Rectangle {
 	}
 }
 
+/***************************** Main function **********************************/
 main();
 
-function slowDown(ball) {
-	if (Math.abs(ball.stepY) > 2) {
-		ball.stepY /= 1.1;
-		ball.stepX /= 1.1;
-		setTimeout(slowDown, 100, ball);
-	} else if (ball.stepY <= 0) {
-		ball.stepY = -2;
-	} else {
-		ball.stepX = 2;
-	}
+function main() {
+	let ballX = canvas.width / 2;
+	let ballY = canvas.height - 40;
+	let paddleW = 75;
+	let paddleH = 10;
+	let paddleX = (canvas.width - paddleW) / 2;
+	let paddleY = canvas.height - 20;
+	var ball = new Sphere(ballX, ballY, 10, 2, -2);
+	var paddle = new Paddle(paddleX, paddleY, paddleW, paddleH, 7); 
+	eventHandler();
+	setInterval(function() {
+		draw(ctx, ball, paddle);
+	}, 10);
 }
 
-
+/************************* Event handler functions ****************************/
 function eventHandler() {
 	document.addEventListener("keydown", keyDownHandler, false);
 	document.addEventListener("keyup", keyUpHandler, false);
@@ -130,6 +134,7 @@ function keyUpHandler(e) {
 	}
 }
 
+/*************************** Drawing functions ********************************/
 function draw(ctx, ball, paddle) {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	paddle.draw(ctx);
@@ -144,6 +149,19 @@ function draw(ctx, ball, paddle) {
 	}
 	ball.draw(ctx);
 	ball.move();
+}
+
+/**************************** Forms functions *********************************/
+function slowDown(ball) {
+	if (Math.abs(ball.stepY) > 2) {
+		ball.stepY /= 1.1;
+		ball.stepX /= 1.1;
+		setTimeout(slowDown, 100, ball);
+	} else if (ball.stepY <= 0) {
+		ball.stepY = -2;
+	} else {
+		ball.stepX = 2;
+	}
 }
 
 function bouncePaddle(ball, paddle) {
@@ -164,21 +182,4 @@ function bouncePaddle(ball, paddle) {
 	}
 	return false;
 }
-
-function main() {
-	let ballX = canvas.width / 2;
-	let ballY = canvas.height - 40;
-	let paddleW = 75;
-	let paddleH = 10;
-	let paddleX = (canvas.width - paddleW) / 2;
-	let paddleY = canvas.height - 20;
-	var ball = new Sphere(ballX, ballY, 10, 2, -2);
-	var paddle = new Paddle(paddleX, paddleY, paddleW, paddleH, 7); 
-	eventHandler();
-	setInterval(function() {
-		draw(ctx, ball, paddle);
-	}, 10);
-}
-
-
 
