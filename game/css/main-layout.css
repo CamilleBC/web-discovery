@@ -9,7 +9,6 @@ body {
 	min-height: 100vh;
 	max-height: 100vh;
 	min-width: 100hh;
-	background: 
 	max-width: 100hh;
 	grid-template-rows: repeat(20, 1fr);
 	grid-template-columns: repeat(20, 1fr);
@@ -23,6 +22,16 @@ body {
 	border-radius: 35px;
 	opacity: 0.8;
 	z-index: 3;
+}
+
+.score {
+	min-height: 80%;
+	max-height: 80%;
+	display: flex;
+	flex-grow: 0;
+	flex-direction: column;
+	align-content: center;;
+	justify-content: space-around;
 }
 
 .side-bottom {

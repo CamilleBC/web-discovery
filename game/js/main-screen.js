@@ -1,5 +1,5 @@
-var canvas = document.getElementById("mainScreen");
-var ctx = canvas.getContext("2d");
+var canvas = document.getElementById('mainScreen');
+var ctx = canvas.getContext('2d');
 var rightPressed = false;
 var leftPressed = false;
 
@@ -18,7 +18,7 @@ class Sphere extends Form {
 	draw(ctx) {
 		ctx.beginPath();
 		ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
-		ctx.fillStyle = "#0095DD";
+		ctx.fillStyle = '#0095DD';
 		ctx.fill();
 		ctx.closePath();
 	}
@@ -29,6 +29,8 @@ class Ball extends Sphere {
 		super(x, y, radius);
 		this.stepX = stepX;
 		this.stepY = stepY;
+		this.baseX = stepX;
+		this.baseY = stepY;
 		this.slowDown = this.slowDown.bind(this);
 	}
 	bounceWall() {
@@ -60,14 +62,17 @@ class Ball extends Sphere {
 		this.y += this.stepY;
 	}
 	slowDown() {
-		if (Math.abs(this.stepY) > 2) {
+		let absBaseY = Math.abs(this.baseY);
+		let absStepY = Math.abs(this.stepY);
+
+		if (absStepY > absBaseY) {
 			this.stepY /= 1.1;
 			this.stepX /= 1.1;
 			setTimeout(this.slowDown, 100);
 		} else if (this.stepY <= 0) {
-			this.stepY = -2;
+			this.stepY = -absBaseY;
 		} else {
-			this.stepX = 2;
+			this.stepY = absBaseY;
 		}
 	}
 }
@@ -80,7 +85,7 @@ class Rectangle extends Form {
 	}
 	draw(ctx) {
 		ctx.beginPath();
-		ctx.fillStyle = "#0095AD";
+		ctx.fillStyle = '#0095AD';
 		ctx.fillRect(this.x, this.y, this.width, this.height);
 		ctx.closePath();
 	}
@@ -140,8 +145,8 @@ function main() {
 
 /************************* Event handler functions ****************************/
 function eventHandler() {
-	document.addEventListener("keydown", keyDownHandler, false);
-	document.addEventListener("keyup", keyUpHandler, false);
+	document.addEventListener('keydown', keyDownHandler, false);
+	document.addEventListener('keyup', keyUpHandler, false);
 }
 
 function keyDownHandler(e) {
@@ -170,7 +175,7 @@ function draw(ctx, ball, paddle, bricks) {
 	if (!ball.bounceWall()) {
 		if (!bouncePaddle(ball, paddle)) {
 			if (ball.isOut()) {
-				alert("GameOver");
+				alert('GameOver');
 				document.location.reload();
 			} 
 		} 
@@ -245,7 +250,9 @@ function collisionDetection(ball, bricks) {
 					if (ballTop < brickBottom) {
 						ball.y = ballOnBrick;
 					}
+					updateScore('1');
 					ball.stepY = -ball.stepY;
+					ball.baseY = Math.abs(ball.baseY + 0.5);
 					brick.isVisible = false;
 				}
 			}
