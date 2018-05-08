@@ -30,7 +30,7 @@ What I have learned:
 ### => pure JavaScript game.
 
 The goal of this small project is to create a small breakout game, managing splitscreen multiplayer (***TO-DO***).
-I'll try to see as many concepts as I can (and need) thorough this project, in order to learn the intrisicacies of the language.
+I'll try to see as many concepts as I can (and need) thorough this project, in order to learn the intricacies of the language.
 
 - Manage *user input* using the **event handler**.
 - Manipulate the **DOM** using pure JavaScript.
@@ -39,7 +39,7 @@ I'll try to see as many concepts as I can (and need) thorough this project, in o
 	- **class** and **extends** syntax to construct new objects
 	- arrow functions
 	- block-scoped variables using **let**
-- Understing the scopes in OO languages, using *this.* , *bind()* functions in class constructors for recursive calls, etc.
+- Understanding the scopes in OO languages, using *this.* , *bind()* functions in class constructors for recursive calls, etc.
 - Understanding and using objects and prototypes in Javascript.
 - Reference checks (*===*) vs value checks (*==*).
 - ... ***TO-DO***
