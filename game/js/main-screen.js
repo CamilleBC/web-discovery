@@ -11,11 +11,9 @@ class Form {
 }
 
 class Sphere extends Form {
-	constructor(x, y, radius, stepX, stepY) {
+	constructor(x, y, radius) {
 		super(x, y);
 		this.radius = radius;
-		this.stepX = stepX;
-		this.stepY = stepY;
 	}
 	draw(ctx) {
 		ctx.beginPath();
@@ -24,9 +22,13 @@ class Sphere extends Form {
 		ctx.fill();
 		ctx.closePath();
 	}
-	move() {
-		this.x += this.stepX;
-		this.y += this.stepY;
+}
+
+class Ball extends Sphere {
+	constructor(x, y, radius, stepX, stepY) {
+		super(x, y, radius);
+		this.stepX = stepX;
+		this.stepY = stepY;
 	}
 	bounceWall() {
 		let nextX = this.x + this.stepX;
@@ -46,10 +48,15 @@ class Sphere extends Form {
 	}
 	isOut() {
 		let nextY =  this.y + this.stepY;
+
 		if (nextY > (canvas.height - this.radius))
 			return true;
 		return false;
 
+	}
+	move() {
+		this.x += this.stepX;
+		this.y += this.stepY;
 	}
 }
 
@@ -102,7 +109,7 @@ function main() {
 	let paddleH = 10;
 	let paddleX = (canvas.width - paddleW) / 2;
 	let paddleY = canvas.height - 20;
-	var ball = new Sphere(ballX, ballY, 10, 2, -2);
+	var ball = new Ball(ballX, ballY, 10, 2, -2);
 	var paddle = new Paddle(paddleX, paddleY, paddleW, paddleH, 7); 
 	var bricks = [];
 	buildBricks(bricks, 2, 3);
@@ -169,7 +176,6 @@ function buildBricks(bricks, bricksColumns, bricksRows) {
 	let hPercent = percentage => (canvas.height / 100) * percentage;
 	let padding = wPercent(10) / bricksColumns;
 	let w = (wPercent(80) / bricksColumns);
-	console.log(w);
 	let h = (canvas.height / 100) * bricksRows;
 	let offsetTop = hPercent(8);
 	let offsetLeft = wPercent(10);
@@ -182,18 +188,6 @@ function buildBricks(bricks, bricksColumns, bricksRows) {
 			let y = (row * (h + padding)) + offsetTop;
 			bricks[col][row] = new Rectangle(x, y, w, h);
 		}
-	}
-}
-
-function slowDown(ball) {
-	if (Math.abs(ball.stepY) > 2) {
-		ball.stepY /= 1.1;
-		ball.stepX /= 1.1;
-		setTimeout(slowDown, 100, ball);
-	} else if (ball.stepY <= 0) {
-		ball.stepY = -2;
-	} else {
-		ball.stepX = 2;
 	}
 }
 
@@ -216,3 +210,14 @@ function bouncePaddle(ball, paddle) {
 	return false;
 }
 
+function slowDown(ball) {
+	if (Math.abs(ball.stepY) > 2) {
+		ball.stepY /= 1.1;
+		ball.stepX /= 1.1;
+		setTimeout(slowDown, 100, ball);
+	} else if (ball.stepY <= 0) {
+		ball.stepY = -2;
+	} else {
+		ball.stepX = 2;
+	}
+}
