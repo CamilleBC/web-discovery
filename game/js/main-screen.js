@@ -29,6 +29,7 @@ class Ball extends Sphere {
 		super(x, y, radius);
 		this.stepX = stepX;
 		this.stepY = stepY;
+		this.slowDown = this.slowDown.bind(this);
 	}
 	bounceWall() {
 		let nextX = this.x + this.stepX;
@@ -57,6 +58,17 @@ class Ball extends Sphere {
 	move() {
 		this.x += this.stepX;
 		this.y += this.stepY;
+	}
+	slowDown() {
+		if (Math.abs(this.stepY) > 2) {
+			this.stepY /= 1.1;
+			this.stepX /= 1.1;
+			setTimeout(this.slowDown, 100);
+		} else if (this.stepY <= 0) {
+			this.stepY = -2;
+		} else {
+			this.stepX = 2;
+		}
 	}
 }
 
@@ -99,6 +111,13 @@ class Paddle extends Rectangle {
 	}
 }
 
+class Brick extends Rectangle {
+	constructor(x, y, width, height, isVisible) {
+		super(x, y, width, height);
+		this.isVisible = isVisible;
+	}
+}
+
 /***************************** Main function **********************************/
 main();
 
@@ -109,10 +128,10 @@ function main() {
 	let paddleH = 10;
 	let paddleX = (canvas.width - paddleW) / 2;
 	let paddleY = canvas.height - 20;
-	var ball = new Ball(ballX, ballY, 10, 2, -2);
+	var ball = new Ball(ballX, ballY, 10, 3, -3);
 	var paddle = new Paddle(paddleX, paddleY, paddleW, paddleH, 7); 
 	var bricks = [];
-	buildBricks(bricks, 2, 3);
+	buildBricks(bricks, 5, 4);
 	eventHandler();
 	setInterval(function() {
 		draw(ctx, ball, paddle, bricks);
@@ -156,6 +175,7 @@ function draw(ctx, ball, paddle, bricks) {
 			} 
 		} 
 	}
+	collisionDetection(ball, bricks);
 	drawBricks(bricks,ctx);
 	ball.draw(ctx);
 	ball.move();
@@ -164,7 +184,9 @@ function draw(ctx, ball, paddle, bricks) {
 function drawBricks(bricks, ctx) {
 	bricks.forEach( function(column) {
 		column.forEach( function(brick) {
-			brick.draw(ctx);
+			if (brick.isVisible) {
+				brick.draw(ctx);
+			}
 		});
 	});
 }
@@ -174,19 +196,17 @@ function drawBricks(bricks, ctx) {
 function buildBricks(bricks, bricksColumns, bricksRows) {
 	let wPercent = percentage => (canvas.width / 100) * percentage;
 	let hPercent = percentage => (canvas.height / 100) * percentage;
-	let padding = wPercent(10) / bricksColumns;
-	let w = (wPercent(80) / bricksColumns);
-	let h = (canvas.height / 100) * bricksRows;
-	let offsetTop = hPercent(8);
-	let offsetLeft = wPercent(10);
-
+	let paddingCol = wPercent(10) / bricksColumns;
+	let paddingRow = wPercent(6) / bricksRows;
+	let w = (canvas.width / bricksColumns) - paddingCol;
+	let h = hPercent(20) / bricksRows;
 
 	for (var col = 0; col < bricksColumns; ++col) {
 		bricks[col] = [];
 		for (let row = 0; row < bricksRows; ++row) {
-			let x = (col * (w + padding)) + offsetLeft;
-			let y = (row * (h + padding)) + offsetTop;
-			bricks[col][row] = new Rectangle(x, y, w, h);
+			let x = (col * (w + (paddingCol / 2))) + paddingCol / 2;
+			let y = (row * (h + (paddingRow / 2))) + paddingRow / 2;
+			bricks[col][row] = new Brick(x, y, w, h, true);
 		}
 	}
 }
@@ -204,20 +224,31 @@ function bouncePaddle(ball, paddle) {
 		}
 		ball.stepY = -ball.stepY * 2;
 		ball.stepX = ball.stepX * 2;
-		setTimeout(slowDown, 300, ball);
+		ball.slowDown();
 		return true;
 	}
 	return false;
 }
 
-function slowDown(ball) {
-	if (Math.abs(ball.stepY) > 2) {
-		ball.stepY /= 1.1;
-		ball.stepX /= 1.1;
-		setTimeout(slowDown, 100, ball);
-	} else if (ball.stepY <= 0) {
-		ball.stepY = -2;
-	} else {
-		ball.stepX = 2;
-	}
+function collisionDetection(ball, bricks) {
+	bricks.forEach( function(column) {
+		column.forEach( function(brick) {
+			if (brick.isVisible) {
+				let ballRight = ball.x + ball.radius;
+				let ballTop = ball.y - ball.radius;
+				let brickBottom = brick.y + brick.height;
+				let brickRight = brick.x + brick.width;
+				let ballOnBrick = brickBottom + ball.radius ;
+
+				if ((ball.x > brick.x && ball.x < brickRight)
+					&& (ballTop <= brickBottom)) {
+					if (ballTop < brickBottom) {
+						ball.y = ballOnBrick;
+					}
+					ball.stepY = -ball.stepY;
+					brick.isVisible = false;
+				}
+			}
+		});
+	});
 }
