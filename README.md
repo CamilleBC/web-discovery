@@ -40,6 +40,7 @@ I'll try to see as many concepts as I can (and need) thorough this project, in o
 	- arrow functions
 	- block-scoped variables using **let**
 - Understanding the scopes in OO languages, using *this.* , *bind()* functions in class constructors for recursive calls, etc.
+- Use **composition** for object creation (see *js/scope.js*)
 - Understanding and using objects and prototypes in Javascript.
 - Reference checks (*===*) vs value checks (*==*).
 - ... ***TO-DO***
@@ -47,6 +48,7 @@ I'll try to see as many concepts as I can (and need) thorough this project, in o
 *note to self* check this:
 - Getters/setters in classes.
 - Need to understand some patterns (*note to self:* look [patterns](http://loredanacirstea.github.io/es6-design-patterns/) and [ES6 features](http://es6-features.org/#NumberTypeChecking)).
+- Understand details about composition, class-based inheritance, *this* scope... Check Eric Elliot articles.
 - ... ***TO-DO***
 
 
