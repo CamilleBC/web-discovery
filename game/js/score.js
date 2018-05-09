@@ -1,29 +1,85 @@
 var sideLeft = document.getElementById('side-left');
 
-var score = {
-	name: 'Test',
-	id: 1,
-	mainScore: 0,
-	timePlayed: 0
-};
 
-function updateScore(playerId) {
-	let highscore = document.getElementById('highscore');
-	let playerElmt = document.getElementById('player-' + score.name);
+/********** Using composition to create player scoreElmts *************************/
+const canGetNameStr = (state) => ({
+	getNameStr: () => {
+		return "Player: " + state.name;
+	}
+})
 
-	score.mainScore += 1;
-	if (highscore == null) {
-		createHighscore(score);
-		createEmptyElmt();
-	} else {
-		printHighscore(playerId);
+const canGetScoreStr = (state) => ({
+	getScoreStr: () => {
+		return "Score: " + state.score;
 	}
-	if (playerElmt == null) {
-		createPlayerElmt(score);
-	} else {
-		printScore(score);
+})
+
+const canGetBestPlayerStr = (state) => ({
+	getBestPlayerStr: () => {
+		return "Best player: " + state.name;
 	}
-	// printTime();
+})
+
+const canGetBestScoreStr = (state) => ({
+	getBestScoreStr: () => {
+		return "Highscore: " + state.score;
+	}
+})
+
+const canIncreaseScore = (state) => ({
+	increaseScore: () => {
+		state.scoreElmt += 1;
+	}
+})
+
+const canSetBestPlayer = (state) => ({
+	setBestPlayer: (player) => {
+		state.name = player;
+	}
+})
+
+const player = (name, id) => {
+	let state = {
+		name,
+		id,
+		score: 0,
+		timePlayed: 0
+	}
+
+	return Object.assign(state, canGetNameStr(state), canGetScoreStr(state),
+		canIncreaseScore(state));
+}
+
+const highscore= (name) => {
+	let state = {
+		name,
+		score: 0,
+		timePlayed: 0
+	}
+
+	return Object.assign(state, canGetBestPlayerStr(state), 
+		canSetBestPlayer(state), canGetBestScoreStr(state), 
+		canIncreaseScore(state));
+}
+/******************************************************************************/
+
+function createScoreHtml(highscore, players) {
+	createHighscoreElmt(highscore);
+	players.forEach( (player) => {
+		createPlayerElmt(player);
+	});
+}
+
+function updateScore(highscore, player) {
+	let scoreElmt = document.getElementById('highscore');
+
+	player.score += 1;
+	if (player.score > highscore.score) {
+		highscore.score = player.score;
+		highscore.name = player.name;
+		printHighscoreElmt(highscore);
+	}
+	printScore(player);
 }
 
 function setHsBackground(background) {
@@ -38,34 +94,34 @@ function setHsBackground(background) {
 	background.style.right = '0';
 }
 
-function setHsIds(playerHigh, scoreHigh, highscore) {
+function setHsIds(playerHigh, scoreHigh, scoreElmt) {
 	playerHigh.id = 'highscore-player';
 	scoreHigh.id = 'highscore-score';
-	highscore.id = 'highscore';
+	scoreElmt.id = 'highscore';
 }
 
-function createHighscore(score) {
-	let highscore = document.createElement('div');
+function createHighscoreElmt(highscore) {
+	let scoreElmt = document.createElement('div');
 	let playerHigh = document.createElement('p');
 	let br = document.createElement('br');
 	let scoreHigh = document.createElement('p');
-	let playerText = document.createTextNode('Best player: ' + score.name);
-	let scoreText = document.createTextNode('Highscore: ' + score.mainScore);
+	let playerText = document.createTextNode(highscore.getBestPlayerStr());
+	let scoreElmtText = document.createTextNode(highscore.getBestScoreStr());
 	let background = document.createElement('div');
 
-	setHsIds(playerHigh, scoreHigh, highscore);
+	setHsIds(playerHigh, scoreHigh, scoreElmt);
 	setHsBackground(background);
-	highscore.style.display = 'block';
-	highscore.style.position = 'relative';
+	scoreElmt.style.display = 'block';
+	scoreElmt.style.position = 'relative';
 	playerHigh.align = 'center';
 	scoreHigh.align = 'center';
 	playerHigh.appendChild(playerText);
-	scoreHigh.appendChild(scoreText);
-	highscore.appendChild(background);
-	highscore.appendChild(playerHigh);
-	highscore.appendChild(br);
-	highscore.appendChild(scoreHigh);
-	sideLeft.appendChild(highscore);
+	scoreHigh.appendChild(scoreElmtText);
+	scoreElmt.appendChild(background);
+	scoreElmt.appendChild(playerHigh);
+	scoreElmt.appendChild(br);
+	scoreElmt.appendChild(scoreHigh);
+	sideLeft.appendChild(scoreElmt);
 }
 
 function setPlBackground(background, id) {
@@ -79,7 +135,7 @@ function setPlBackground(background, id) {
 		case 3:
 			background.style.background = 'green';
 			break;
-		case 1:
+		case 4:
 			background.style.background = 'yellow';
 			break;
 	}
@@ -92,35 +148,38 @@ function setPlBackground(background, id) {
 	background.style.right = '0';
 }
 
-function createPlayerElmt(score) {
+function createPlayerElmt(player) {
 	let playerElmt = document.createElement('div');
-	let scoreElmt = document.createElement('p');
-	let playerText = document.createTextNode('Player: ' + score.name);
-	let scoreText = document.createTextNode('Score: ' + score.mainScore);
+	let playerName = document.createElement('p');
+	let score = document.createElement('p');
+	let playerText = document.createTextNode(player.getNameStr());
+	let scoreText = document.createTextNode(player.getScoreStr());
 	let background = document.createElement('div');
 
-	setPlBackground(background, score.id);
-	playerElmt.id = 'player-' + score.name;
-	console.log(playerElmt.id);
-	scoreElmt.id = 'player-' + score.name + '-score';
-	scoreElmt.appendChild(scoreText);
-	scoreElmt.align = 'center';
+	setPlBackground(background, player.id);
+	playerElmt.id = 'player-' + player.name;
+	score.id = 'player-' + player.name.toLowerCase() + '-score';
+	score.appendChild(scoreText);
+	score.align = 'center';
 	playerElmt.style.display = 'block';
 	playerElmt.style.position = 'relative';
 	playerElmt.appendChild(background);
-	playerElmt.appendChild(scoreElmt);
+	playerElmt.appendChild(score);
 	sideLeft.appendChild(playerElmt);
 }
 
-function printHighscore(playerId) {
-	let scoreElmt = document.getElementById('highscore-score');
+function printHighscoreElmt(highscore) {
+	let player = document.getElementById('highscore-player');
+	let score = document.getElementById('highscore-score');
 
-	scoreElmt.textContent = 'Highscore: ' + score.mainScore;
+	player.textContent = highscore.getBestPlayerStr();
+	score.textContent = highscore.getBestScoreStr();
 }
 
-function printScore(score) {
-	let scoreElmt = document.getElementById('player-' + score.name + '-score');
+function printScore(player) {
+	let score = document.getElementById('player-' 
+		+ player.name.toLowerCase() + '-score');
 
-	scoreElmt.textContent = 'Score: ' + score.mainScore;
+	score.textContent = player.getScoreStr();
 }
 

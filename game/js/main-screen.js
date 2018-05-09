@@ -1,7 +1,9 @@
 var canvas = document.getElementById('mainScreen');
 var ctx = canvas.getContext('2d');
-var rightPressed = false;
-var leftPressed = false;
+var rightPressed1 = false;
+var leftPressed1 = false;
+var rightPressed2 = false;
+var leftPressed2 = false;
 
 class Form {
 	constructor(x, y) {
@@ -32,6 +34,7 @@ class Ball extends Sphere {
 		this.baseX = stepX;
 		this.baseY = stepY;
 		this.slowDown = this.slowDown.bind(this);
+		this.ownerId = 1;
 	}
 	bounceWall() {
 		let nextX = this.x + this.stepX;
@@ -83,34 +86,84 @@ class Rectangle extends Form {
 		this.width = width;
 		this.height = height;
 	}
-	draw(ctx) {
+	draw(ctx, colour) {
 		ctx.beginPath();
-		ctx.fillStyle = '#0095AD';
+		ctx.fillStyle = colour;
+		ctx.globalAlpha = 0.5;
 		ctx.fillRect(this.x, this.y, this.width, this.height);
+		ctx.globalAlpha = 1.0;
 		ctx.closePath();
 	}
 }
 
 class Paddle extends Rectangle {
-	constructor(x, y, width, height, step) {
+	constructor(x, y, width, height, step, id) {
 		super(x, y, width, height);
+		this.id = id;
 		this.step = step;
+		this.inputSet = { right: false, left: false };
+		this.colour = 'red';
 	}
-	input() {
-		if (rightPressed) {
-			this.move(true, this.step);
-		} else if (leftPressed) {
-			this.move(false, this.step);
+	defineColour() {
+			switch (this.id) {
+				case 1:
+					this.colour = 'red';
+					break;
+				case 2:
+					this.colour = 'blue';
+					break;
+				case 3:
+					this.colour = 'green';
+					break;
+				case 4:
+					this.colour = 'yellow';
+					break;
+			}
+	}
+	eventListener() {
+		document.addEventListener('keydown', 
+			this.keyDownHandler.bind(this), false);
+		document.addEventListener('keyup', 
+			this.keyUpHandler.bind(this), false);
+	}
+	keyDownHandler(e) {
+		if (this.id === 1) {
+			if(e.keyCode == 39) {
+				this.inputSet.right = true;
+			} else if(e.keyCode == 37) {
+				this.inputSet.left = true;
+			}
+		} else if (this.id === 2) {
+			if(e.keyCode == 68) {
+				this.inputSet.right = true;
+			} else if(e.keyCode == 65) {
+				this.inputSet.left = true;
+			}
 		}
 	}
-	move(direction) {
+	keyUpHandler(e) {
+		if (this.id === 1) {
+			if(e.keyCode == 39) {
+				this.inputSet.right = false;
+			} else if(e.keyCode == 37) {
+				this.inputSet.left = false;
+			}
+		} else if (this.id === 2) {
+			if(e.keyCode == 68) {
+				this.inputSet.right = false;
+			} else if(e.keyCode == 65) {
+				this.inputSet.left = false;
+			}
+		}
+	}
+	move() {
 		let rightLimit = canvas.width - this.width;
 		let leftLimit = 0;
 
-		if (direction === true && this.x < rightLimit) {
+		if (this.inputSet.right === true && this.x < rightLimit) {
 			this.x += this.step;
 		}
-		if (direction === false && this.x > leftLimit) {
+		if (this.inputSet.left === true && this.x > leftLimit) {
 			this.x -= this.step;
 		}
 	}
@@ -127,60 +180,38 @@ class Brick extends Rectangle {
 main();
 
 function main() {
-	let ballX = canvas.width / 2;
-	let ballY = canvas.height - 40;
-	let paddleW = 75;
-	let paddleH = 10;
-	let paddleX = (canvas.width - paddleW) / 2;
-	let paddleY = canvas.height - 20;
-	var ball = new Ball(ballX, ballY, 10, 3, -3);
-	var paddle = new Paddle(paddleX, paddleY, paddleW, paddleH, 7); 
+	var ball = defineBall();
+	var paddles = definePaddles();
+	var players = definePlayers();
 	var bricks = [];
+	const topScore = highscore(players[0].name);
+
+	createScoreHtml(topScore, players);
 	buildBricks(bricks, 5, 4);
-	eventHandler();
+	paddles.forEach ( (paddle) => {
+		paddle.eventListener();
+	});
 	setInterval(function() {
-		draw(ctx, ball, paddle, bricks);
+		draw(ctx, ball, paddles, bricks, topScore, players);
 	}, 10);
 }
 
-/************************* Event handler functions ****************************/
-function eventHandler() {
-	document.addEventListener('keydown', keyDownHandler, false);
-	document.addEventListener('keyup', keyUpHandler, false);
-}
-
-function keyDownHandler(e) {
-	if(e.keyCode == 39) {
-		rightPressed = true;
-	}
-	else if(e.keyCode == 37) {
-		leftPressed = true;
-	}
-}
-
-function keyUpHandler(e) {
-	if(e.keyCode == 39) {
-		rightPressed = false;
-	}
-	else if(e.keyCode == 37) {
-		leftPressed = false;
-	}
-}
-
 /*************************** Drawing functions ********************************/
-function draw(ctx, ball, paddle, bricks) {
+function draw(ctx, ball, paddles, bricks, score, players) {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	paddle.draw(ctx);
-	paddle.input();
+	paddles.forEach( (paddle) => {
+		paddle.draw(ctx, paddle.colour);
+		paddle.move();
+	});
 	if (!ball.bounceWall()) {
-		if (!bouncePaddle(ball, paddle)) {
+		if (!bouncePaddles(ball, paddles)) {
 			if (ball.isOut()) {
 				alert('GameOver');
 				document.location.reload();
 			} 
 		} 
 	}
-	collisionDetection(ball, bricks);
+	collisionDetection(ball, bricks, score, players);
 	drawBricks(bricks,ctx);
 	ball.draw(ctx);
 	ball.move();
@@ -190,7 +221,7 @@ function drawBricks(bricks, ctx) {
 	bricks.forEach( function(column) {
 		column.forEach( function(brick) {
 			if (brick.isVisible) {
-				brick.draw(ctx);
+				brick.draw(ctx, '#0095AD');
 			}
 		});
 	});
@@ -216,26 +247,43 @@ function buildBricks(bricks, bricksColumns, bricksRows) {
 	}
 }
 
-function bouncePaddle(ball, paddle) {
-	let ballRight = ball.x + ball.radius;
-	let ballBottom = ball.y + ball.radius;
-	let paddleRight = paddle.x + paddle.width;
-	let ballOnPaddle = paddle.y - ball.radius ;
+function bouncePaddles(ball, paddles) {
+	let ret = false;
+	paddles.forEach( (paddle) => {
+		let ballRight = ball.x + ball.radius;
+		let ballBottom = ball.y + ball.radius;
+		let paddleRight = paddle.x + paddle.width;
+		let ballOnPaddle = paddle.y - ball.radius ;
 
-	if ((ball.x > paddle.x && ball.x < paddleRight)
-		&& (ballBottom >= paddle.y)) {
-		if (ballBottom > paddle.y) {
-			ball.y = ballOnPaddle;
+		if ((ball.x > paddle.x && ball.x < paddleRight)
+			&& (ballBottom >= paddle.y)) {
+			if (ballBottom > paddle.y) {
+				ball.y = ballOnPaddle;
+			}
+			ball.stepY = -ball.stepY * 2;
+			ball.stepX = ball.stepX * 2;
+			ball.slowDown();
+			ball.ownerId = paddle.id;
+			console.log("ID: " + ball.ownerId);
+			ret = true;
 		}
-		ball.stepY = -ball.stepY * 2;
-		ball.stepX = ball.stepX * 2;
-		ball.slowDown();
-		return true;
-	}
-	return false;
+	});
+	return ret;
 }
 
-function collisionDetection(ball, bricks) {
+function getActivePlayer(ball, players) {
+	let activePlayer = null;
+
+	players.forEach( (player) => {
+		if (ball.ownerId == player.id) {
+				console.log(JSON.stringify(player));
+			activePlayer = player;
+		}
+	});
+	return activePlayer;
+}
+
+function collisionDetection(ball, bricks, score, players) {
 	bricks.forEach( function(column) {
 		column.forEach( function(brick) {
 			if (brick.isVisible) {
@@ -250,7 +298,9 @@ function collisionDetection(ball, bricks) {
 					if (ballTop < brickBottom) {
 						ball.y = ballOnBrick;
 					}
-					updateScore('1');
+					let activePlayer = getActivePlayer(
+						ball, players);
+					updateScore(score, activePlayer);
 					ball.stepY = -ball.stepY;
 					ball.baseY = Math.abs(ball.baseY + 0.5);
 					brick.isVisible = false;
@@ -258,4 +308,42 @@ function collisionDetection(ball, bricks) {
 			}
 		});
 	});
+}
+
+/******************************** Defines *************************************/
+
+function defineBall() {
+	let ballX = canvas.width / 2;
+	let ballY = canvas.height - 40;
+	let ball = new Ball(ballX, ballY, 10, 3, -3);
+
+	return ball;
+}
+
+function definePaddles() {
+	let paddles = [];
+	let pW = 75;
+	let pH = 10;
+	let p1X = (canvas.width - pW) / 3;
+	let p1Y = canvas.height - 20;
+	let p2X = (canvas.width - pW) / 1.33;
+	let p2Y = canvas.height - 20;
+	let paddle1 = new Paddle(p1X, p1Y, pW, pH, 7, 1); 
+	let paddle2 = new Paddle(p2X, p2Y, pW, pH, 7, 2); 
+
+	paddle1.defineColour();
+	paddle2.defineColour();
+	paddles.push(paddle1);
+	paddles.push(paddle2);
+	return paddles;
+}
+
+function definePlayers() {
+	let players = [];
+	let jay = player("Jay", 1);
+	let bob = player("Silent Bob", 2);
+
+	players.push(jay);
+	players.push(bob);
+	return players;
 }
