@@ -4,16 +4,56 @@
 		<meta charset="utf-8">
 		<title>42 bricks</title>
 		<link rel="stylesheet" type="text/css" href="./css/main-layout.css"/>	
+		<link rel="stylesheet" type="text/css" href="./css/popup-layout.css"/>	
 	</head>
 	<body>
-		<div class="main-screen">
-			<canvas id="mainScreen" width="800" height="480">
+		<div class="main-screen" id="mainscreen">
+			<canvas id="game" width="1280" height="800">
 			</canvas>
 		</div>
-		<div class="side-left">
-			<div class="score" id="side-left"></div>
+		<div class="side">
+			<div class="score" id="side"></div>
 		</div>
-		<div class="side-bottom"></div>
+		<div id="startup-screen" class="modal">
+			<span class="close">&times;</span>
+			<h1 class="btn-text">Start Game</h1>
+			<h2 class="btn-text">Choose number of players:</h2>
+			<div class="buttons">
+				<button class="player-btn" id="one-player">
+					1
+				</button>
+				<button class="player-btn" id="two-players">
+					2
+				</button>
+			</div>
+
+		</div>
+		<div id="name" class="modal">
+			<h1 class="btn-text">Input name of the players</h1>
+			<input type="text" name="player">
+			<div class="buttons">
+				<button class="ok-btn" id="okName">
+					ok
+				</button>
+				<button class="cancel-btn" "cancelName">
+					cancel
+				</button>
+			</div>
+		</div>
+		<div id="gameover-screen" class="modal">
+			<div class="end-screen">
+				<span class="close">&times;</span>
+				<p class="btn-text">Well done, mate. Your final score is: placeholder</p>
+				<div class="buttons">
+					<button class="ok-btn" id="okEnd">
+						Think you can do better?
+					</button>
+					<button class="cancel-btn" "cancelEnd">
+						No, please go away!
+					</button>
+				</div>
+			</div>
+		</div>
 	</body>
 	<script type="text/javascript" src="./js/score.js"></script>
 	<script type="text/javascript" src="./js/main-screen.js"></script>

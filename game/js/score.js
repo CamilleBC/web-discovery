@@ -1,4 +1,4 @@
-var sideLeft = document.getElementById('side-left');
+var sideLeft = document.getElementById('side');
 
 
 /********** Using composition to create player scoreElmts *************************/

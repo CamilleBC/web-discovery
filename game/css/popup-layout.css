@@ -1,0 +1,44 @@
+div.modal {
+	background-color: #4C92FF;
+	opacity: 0.9;
+	margin: 0 auto;
+	border-radius: 5%;
+	max-width: 60%;
+	min-width: 250px;
+	max-height: 40%;
+	min-height: 250px;
+	display:flex;
+	flex-direction: column;
+	justify-content: center;
+	display: none;
+}
+
+div.buttons {
+	display: flex;
+	flex: auto;
+	justify-content: center;
+}
+
+button.ok-btn {
+	background-color: rgba(76, 146, 97, 0.6);
+	border-radius: 10%;
+	margin: 10px;
+	/* display: none; */
+}
+
+button.cancel-btn {
+	background-color: rgba(146, 6, 0, 0.9);
+	border-radius: 10%;
+	margin: 10px;
+	/* display: none; */
+}
+
+button.player-btn {
+	border-radius: 10%;
+	margin: 10px;
+	/* display: none; */
+}
+
+.btn-text {
+	text-align: center;
+}

@@ -1,9 +1,5 @@
-var canvas = document.getElementById('mainScreen');
+var canvas = document.getElementById('game');
 var ctx = canvas.getContext('2d');
-var rightPressed1 = false;
-var leftPressed1 = false;
-var rightPressed2 = false;
-var leftPressed2 = false;
 
 class Form {
 	constructor(x, y) {
@@ -321,23 +317,29 @@ function collisionDetection(ball, bricks, score, players) {
 /******************************** Defines *************************************/
 
 function defineBall() {
-	let ballX = canvas.width / 2;
-	let ballY = canvas.height - 40;
-	let ball = new Ball(ballX, ballY, 10, 3, -3);
+	let x = canvas.width / 2;
+	let y = canvas.height - 40;
+	let radius = canvas.width / 100;
+	let stepX = canvas.width / 400;
+	let stepY = - (canvas.height / 250);
+	let ball = new Ball(x, y, radius, stepX, stepY);
 
 	return ball;
 }
 
 function definePaddles() {
 	let paddles = [];
-	let pW = 75;
-	let pH = 10;
+	let pW = canvas.width / 14;
+	let pH = canvas.height / 50;
 	let p1X = (canvas.width - pW) / 3;
-	let p1Y = canvas.height - 20;
+	let p1Y = canvas.height - pH;
 	let p2X = (canvas.width - pW) / 1.33;
-	let p2Y = canvas.height - 20;
-	let paddle1 = new Paddle(p1X, p1Y, pW, pH, 7, 1); 
-	let paddle2 = new Paddle(p2X, p2Y, pW, pH, 7, 2); 
+	let p2Y = canvas.height - pH;
+	let step = 7;
+	let p1Id = 1;
+	let p2Id = 2;
+	let paddle1 = new Paddle(p1X, p1Y, pW, pH, step, p1Id); 
+	let paddle2 = new Paddle(p2X, p2Y, pW, pH, step, p2Id); 
 
 	paddle1.defineColour();
 	paddle2.defineColour();
