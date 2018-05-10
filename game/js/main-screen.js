@@ -34,7 +34,8 @@ class Ball extends Sphere {
 		this.baseX = stepX;
 		this.baseY = stepY;
 		this.slowDown = this.slowDown.bind(this);
-		this.ownerId = 1;
+		this.ownerId = 0;
+		this.boost = false;
 	}
 	bounceWall() {
 		let nextX = this.x + this.stepX;
@@ -74,8 +75,10 @@ class Ball extends Sphere {
 			setTimeout(this.slowDown, 100);
 		} else if (this.stepY <= 0) {
 			this.stepY = -absBaseY;
+			this.boost = false;
 		} else {
 			this.stepY = absBaseY;
+			this.boost = false;
 		}
 	}
 }
@@ -260,9 +263,12 @@ function bouncePaddles(ball, paddles) {
 			if (ballBottom > paddle.y) {
 				ball.y = ballOnPaddle;
 			}
-			ball.stepY = -ball.stepY * 2;
-			ball.stepX = ball.stepX * 2;
-			ball.slowDown();
+			if (!ball.boost) {
+				ball.stepY = -ball.stepY * 2;
+				ball.stepX = ball.stepX * 2;
+				ball.slowDown();
+				ball.boost = true;
+			}
 			ball.ownerId = paddle.id;
 			console.log("ID: " + ball.ownerId);
 			ret = true;
@@ -300,7 +306,9 @@ function collisionDetection(ball, bricks, score, players) {
 					}
 					let activePlayer = getActivePlayer(
 						ball, players);
-					updateScore(score, activePlayer);
+					if (activePlayer) {
+						updateScore(score, activePlayer);
+					}
 					ball.stepY = -ball.stepY;
 					ball.baseY = Math.abs(ball.baseY + 0.5);
 					brick.isVisible = false;

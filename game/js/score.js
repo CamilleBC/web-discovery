@@ -158,12 +158,16 @@ function createPlayerElmt(player) {
 
 	setPlBackground(background, player.id);
 	playerElmt.id = 'player-' + player.name;
+	playerName.id = 'player-' + player.name.toLowerCase() + '-name';
+	playerName.appendChild(playerText);
+	playerName.align = 'center';
 	score.id = 'player-' + player.name.toLowerCase() + '-score';
 	score.appendChild(scoreText);
 	score.align = 'center';
 	playerElmt.style.display = 'block';
 	playerElmt.style.position = 'relative';
 	playerElmt.appendChild(background);
+	playerElmt.appendChild(playerName);
 	playerElmt.appendChild(score);
 	sideLeft.appendChild(playerElmt);
 }
@@ -177,9 +181,9 @@ function printHighscoreElmt(highscore) {
 }
 
 function printScore(player) {
-	let score = document.getElementById('player-' 
+	let scoreElmt = document.getElementById('player-' 
 		+ player.name.toLowerCase() + '-score');
 
-	score.textContent = player.getScoreStr();
+	scoreElmt.textContent = player.getScoreStr();
 }
 
