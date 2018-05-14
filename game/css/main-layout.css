@@ -2,14 +2,11 @@
 
 body {
 	background-color: #9A9A9F;
+	color: 'white';
 	/* Grid definition */
 	display: grid;
-	min-height: 100vh;
-	max-height: 100vh;
-	min-width: 100hh;
-	max-width: 100hh;
-	grid-template-rows: repeat(10, 1fr);
-	grid-template-columns: repeat(10, 1fr);
+	font-family: 'Open Sans', sans-serif;
+	font-weight: bold;
 	grid-template-areas: 
 		"top  top  top  top  top  top  top  top  top  top  top"
 		"side side game game game game game game game game game"
@@ -21,44 +18,46 @@ body {
 		"side side game game game game game game game game game"
 		"side side game game game game game game game game game"
 		"bot  bot  bot  bot  bot  bot  bot  bot  bot  bot  bot";
+	grid-template-columns: repeat(10, 1fr);
+	grid-template-rows: repeat(10, 1fr);
+	max-height: 100vh;
+	max-width: 100hh;
+	min-height: 100vh;
+	min-width: 100hh;
 	z-index: 1;
-	font-family: 'Open Sans', sans-serif;
-	font-weight: bold;
-	color: 'white';
 }
 
 .side {
-	grid-area: side;
 	background-color: #7A7A98;
 	border-radius: 35px;
+	grid-area: side;
 	opacity: 0.8;
 	z-index: 3;
 }
 
 .score {
-	min-height: 80%;
-	max-height: 80%;
-	display: flex;
-	flex-grow: 0;
-	flex-direction: column;
 	align-content: center;;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 0;
 	justify-content: space-around;
+	max-height: 80%;
+	min-height: 80%;
 }
 
 .main-screen {
-	grid-area: game;
 	background-color: #5A5A5F;
-	opacity: 0.9;
-	z-index: 2;
-	/* Using flexbox to center the canvas */
 	display: flex;
 	flex: auto;
+	grid-area: game;
 	justify-content: center;
+	opacity: 0.9;
+	z-index: 2;
 }
 
- #game {
+#game {
 	background: #5a5a7f;
-	width: 1280;
 	height: 800;
 	margin: auto;
+	width: 1280;
  }
