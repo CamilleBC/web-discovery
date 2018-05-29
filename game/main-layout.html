@@ -8,12 +8,14 @@
 		<link rel="stylesheet" type="text/css" href="./css/popup-layout.css"/>	
 	</head>
 	<body>
-		<div class="main-screen" id="main-screen">
-			<canvas class="game-screen" id="game" width="1280" height="800">
-			</canvas>
-		</div>
-		<div class="side">
-			<div class="score" id="side"></div>
+		<div class="full-screen" id="full-screen">
+			<div class="main-screen" id="main-screen">
+				<canvas class="game-screen" id="game" width="1280" height="800">
+				</canvas>
+			</div>
+			<div class="side">
+				<div class="score" id="side"></div>
+			</div>
 		</div>
 		<div class="modal" id="startup-modal">
 			<h1 class="btn-text">Start Game</h1>
@@ -32,10 +34,14 @@
 		</div>
 		<div class="modal" id="creation-modal">
 			<h1 class="btn-text">Input your name, red player:</h1>
-			<input class="player-input" id="name-input" type="text" name="player">
+			<label for="input-name">Player's name</label>
+			<input class="player-input" id="input-name" type="text" name="player">
 			<div class="buttons">
 				<button class="ok-btn" id="ok-name">
 					ok
+				</button>
+				<button class="cancel-btn" id="clear-name">
+					clear
 				</button>
 			</div>
 		</div>

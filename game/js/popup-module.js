@@ -1,27 +1,18 @@
 // Popup module for the modal "loose" box
 
-function initPlayer(nbPlayers) {
-  let creationModal = document.getElementById("creation-modal");
-  let nameInput = document.getElementById("name-input");
-  let newPlayer = player(nameInput.value, 1);
-
-  players.addPlayer(newPlayer);
-  console.log(JSON.stringify(players.getPlayers()));
-  console.log(players.getPlayerNumber());
-  if (players.getPlayerNumber() === nbPlayers) {
-    createScoreHtml();
-    creationModal.style.display = "none";
-    pause = false;
-  } else {
-  }
+function eraseAndFocusInput(input) {
+  input.value = "";
+  input.focus();
 }
 
 function getPlayers(nbPlayer) {
-  let startupModal = document.getElementById("startup-modal");
   let creationModal = document.getElementById("creation-modal");
   let inputOk = document.getElementById("ok-name");
-  let players = [];
+  let inputClear = document.getElementById("clear-name");
+  let inputName = document.getElementById("input-name");
   let nbPlayers = 0;
+  let players = [];
+  let startupModal = document.getElementById("startup-modal");
 
   switch (nbPlayer) {
     case "one-player":
@@ -36,21 +27,74 @@ function getPlayers(nbPlayer) {
   }
   startupModal.style.display = "none";
   creationModal.style.display = "flex";
+  eraseAndFocusInput(inputName);
+  creationModal.addEventListener("click", function() {
+    eraseAndFocusInput(inputName);
+  });
+  inputName.addEventListener("keypress", function(e) {
+    onEnterInput(e);
+  });
   inputOk.addEventListener("click", function() {
     initPlayer(nbPlayers);
   });
 }
 
 function initNbPlayerButtons() {
-  let startupModal = document.getElementById("startup-modal");
   let playerButtons = Array.from(document.getElementsByClassName("player-btn"));
+  let startupModal = document.getElementById("startup-modal");
 
   startupModal.style.display = "flex";
-  console.log(playerButtons);
   // Using dynamic DOM Event
   playerButtons.forEach(player => {
     player.addEventListener("click", function() {
       getPlayers(this.id);
     });
+    player.addEventListener("keypress", function(e) {
+      onNumberInput(e);
+    });
   });
+}
+
+function initPlayer(nbPlayers) {
+  let inputName = document.getElementById("input-name");
+  let newPlayer = player(inputName.value, players.getPlayers().length + 1);
+
+  players.addPlayer(newPlayer);
+  console.log(JSON.stringify(players.getPlayers()));
+  console.log(players.getPlayerNumber());
+  if (players.getPlayerNumber() === nbPlayers) {
+    let creationModal = document.getElementById("creation-modal");
+    let fullScreen = document.getElementById("full-screen");
+
+    paddles = definePaddles(players);
+    createScoreHtml();
+    fullScreen.style.display = "grid";
+    creationModal.style.display = "none";
+    pause = false;
+  } else {
+  }
+}
+
+function onEnterInput(e) {
+  console.log("keypress");
+  if (e.keyCode === 13) {
+    console.log("enter");
+    let inputOk = document.getElementById("ok-name");
+    console.log(JSON.stringify(inputOk));
+
+    inputOk.click();
+    e.stopPropagation();
+  }
+}
+
+function onNumberInput(e) {
+  console.log("keypress");
+  if (e.keyCode === 31 || e.keyCode === 97) {
+    console.log("key 1");
+    let inputOk = document.getElementById("ok-name");
+    console.log(JSON.stringify(inputOk));
+
+    inputOk.click();
+    e.stopPropagation();
+  }
 }

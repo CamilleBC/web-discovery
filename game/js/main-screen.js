@@ -1,6 +1,7 @@
 var canvas = document.getElementById("game");
 var ctx = canvas.getContext("2d");
 var pause = true;
+var paddles = [];
 
 class Form {
   constructor(x, y) {
@@ -182,9 +183,11 @@ var players = (function() {
     let name;
     let score = 0;
     array.forEach(player => {
-      if (player.score >= score) {
+      if (player.score > score) {
         name = player.name;
         score = player.score;
+      } else if (player.score === score) {
+        name = "Ex Aequo";
       }
     });
     return name;
@@ -224,19 +227,16 @@ var players = (function() {
   };
 })();
 
-/** *************************** Main function **********************************/
+/***************************** Main function **********************************/
 main();
 
 function main() {
   let ball = defineBall();
-  let paddles = definePaddles();
   let bricks = [];
 
   initNbPlayerButtons();
+  // let paddles = definePaddles(players);
   buildBricks(bricks, 5, 4);
-  paddles.forEach(paddle => {
-    paddle.eventListener();
-  });
   setInterval(function() {
     if (!pause) {
       draw(ctx, ball, paddles, bricks, players);
@@ -244,7 +244,7 @@ function main() {
   }, 10);
 }
 
-/** ************************* Drawing functions ********************************/
+/*************************** Drawing functions ********************************/
 function draw(ctx, ball, paddles, bricks, score, players) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   paddles.forEach(paddle => {
@@ -275,7 +275,7 @@ function drawBricks(bricks, ctx) {
   });
 }
 
-/** ************************** Forms functions *********************************/
+/**************************** Forms functions *********************************/
 // Build bricks by sizing, spacing them depending on the number or col and rows
 function buildBricks(bricks, bricksColumns, bricksRows) {
   let wPercent = percentage => canvas.width / 100 * percentage;
@@ -358,7 +358,7 @@ function collisionDetection(ball, bricks, players) {
   });
 }
 
-/** ****************************** Defines *************************************/
+/******************************** Defines *************************************/
 
 function defineBall() {
   let x = canvas.width / 2;
@@ -371,23 +371,23 @@ function defineBall() {
   return ball;
 }
 
-function definePaddles() {
+function definePaddles(players) {
   let paddles = [];
-  let pW = canvas.width / 14;
-  let pH = canvas.height / 50;
-  let p1X = (canvas.width - pW) / 3;
-  let p1Y = canvas.height - pH;
-  let p2X = (canvas.width - pW) / 1.33;
-  let p2Y = canvas.height - pH;
-  let step = 7;
-  let p1Id = 1;
-  let p2Id = 2;
-  let paddle1 = new Paddle(p1X, p1Y, pW, pH, step, p1Id);
-  let paddle2 = new Paddle(p2X, p2Y, pW, pH, step, p2Id);
+  playerNumber = players.getPlayerNumber();
 
-  paddle1.defineColour();
-  paddle2.defineColour();
-  paddles.push(paddle1);
-  paddles.push(paddle2);
+  for (let i = 0; i < playerNumber; ++i) {
+    let pW = canvas.width / 14;
+    let pH = canvas.height / 50;
+    let paddleCoefficient = (i + 1) / (playerNumber + 1);
+    let pX = canvas.width * paddleCoefficient - pW;
+    let pY = canvas.height - pH;
+    let step = 7;
+    let id = i + 1;
+    let paddle = new Paddle(pX, pY, pW, pH, step, id);
+
+    paddle.defineColour();
+    paddles.push(paddle);
+    paddle.eventListener();
+  }
   return paddles;
 }

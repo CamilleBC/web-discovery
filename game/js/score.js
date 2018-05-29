@@ -1,6 +1,11 @@
 var sideLeft = document.getElementById("side");
 
 /********** Using composition to create player scoreElmts *********************/
+/*
+ * This is useless in this case and redundant with the extisting players object 
+ * litteral. This was just done to understand how to do composition.
+ */
+
 const canGetNameStr = state => ({
   getNameStr: () => {
     return "Player: " + state.name;
@@ -71,8 +76,7 @@ const highscore = name => {
 /******************************************************************************/
 
 function createScoreHtml() {
-  let topscore = highscore(players.getPlayerName(0));
-  createHighscoreElmt(topscore);
+  createHighscoreElmt();
   players.getPlayers().forEach(player => {
     createPlayerElmt(player);
   });
@@ -81,10 +85,8 @@ function createScoreHtml() {
 function updateScore() {
   let scoreElmt = document.getElementById("highscore");
 
-  highscore.score += players.getTotalScore();
   console.log(players.getTotalScore());
-  highscore.name = players.getBestPlayerName();
-  printHighscoreElmt(highscore);
+  printHighscoreElmt();
   players.getPlayers().forEach(player => {
     printScore(player);
   });
@@ -108,13 +110,13 @@ function setHsIds(playerHigh, scoreHigh, scoreElmt) {
   scoreElmt.id = "highscore";
 }
 
-function createHighscoreElmt(highscore) {
+function createHighscoreElmt() {
   let scoreElmt = document.createElement("div");
   let playerHigh = document.createElement("p");
   let br = document.createElement("br");
   let scoreHigh = document.createElement("p");
-  let playerText = document.createTextNode(highscore.getBestPlayerStr());
-  let scoreElmtText = document.createTextNode(highscore.getBestScoreStr());
+  let playerText = document.createTextNode("Best Player: Ex Aequo");
+  let scoreElmtText = document.createTextNode("Highscore: 0");
   let background = document.createElement("div");
 
   setHsIds(playerHigh, scoreHigh, scoreElmt);
@@ -180,12 +182,12 @@ function createPlayerElmt(player) {
   sideLeft.appendChild(playerElmt);
 }
 
-function printHighscoreElmt(highscore) {
+function printHighscoreElmt() {
   let player = document.getElementById("highscore-player");
   let score = document.getElementById("highscore-score");
 
-  player.textContent = highscore.getBestPlayerStr();
-  score.textContent = highscore.getBestScoreStr();
+  player.textContent = "Best player: " + players.getBestPlayerName();
+  score.textContent = "Total score: " + players.getTotalScore();
 }
 
 function printScore(player) {

@@ -1,10 +1,20 @@
-body {
+.body,
+.full-screen {
   background-color: #9a9a9f;
-  color: white;
-  /* Grid definition */
-  display: grid;
+  display: block;
+  /* color: white; */
   font-family: "Open Sans", sans-serif;
   font-weight: bold;
+  max-height: 100vh;
+  max-width: 100vw;
+  min-height: 100vh;
+  min-width: 100vw;
+  margin: 0;
+}
+
+.full-screen {
+  /* Grid definition */
+  display: none;
   grid-template-areas:
     "top  top  top  top  top  top  top  top  top  top  top"
     "side side game game game game game game game game game"
@@ -18,10 +28,6 @@ body {
     "bot  bot  bot  bot  bot  bot  bot  bot  bot  bot  bot";
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
-  max-height: 100vh;
-  max-width: 100vw;
-  min-height: 100vh;
-  min-width: 100vw;
   z-index: 1;
 }
 
