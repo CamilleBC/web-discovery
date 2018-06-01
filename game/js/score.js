@@ -85,7 +85,6 @@ function createScoreHtml() {
 function updateScore() {
   let scoreElmt = document.getElementById("highscore");
 
-  console.log(players.getTotalScore());
   printHighscoreElmt();
   players.getPlayers().forEach(player => {
     printScore(player);

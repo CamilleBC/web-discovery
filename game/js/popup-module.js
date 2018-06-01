@@ -60,8 +60,6 @@ function initPlayer(nbPlayers) {
   let newPlayer = player(inputName.value, players.getPlayers().length + 1);
 
   players.addPlayer(newPlayer);
-  console.log(JSON.stringify(players.getPlayers()));
-  console.log(players.getPlayerNumber());
   if (players.getPlayerNumber() === nbPlayers) {
     let creationModal = document.getElementById("creation-modal");
     let fullScreen = document.getElementById("full-screen");
@@ -76,24 +74,16 @@ function initPlayer(nbPlayers) {
 }
 
 function onEnterInput(e) {
-  console.log("keypress");
   if (e.keyCode === 13) {
-    console.log("enter");
     let inputOk = document.getElementById("ok-name");
-    console.log(JSON.stringify(inputOk));
-
     inputOk.click();
     e.stopPropagation();
   }
 }
 
 function onNumberInput(e) {
-  console.log("keypress");
   if (e.keyCode === 31 || e.keyCode === 97) {
-    console.log("key 1");
     let inputOk = document.getElementById("ok-name");
-    console.log(JSON.stringify(inputOk));
-
     inputOk.click();
     e.stopPropagation();
   }

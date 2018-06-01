@@ -7,6 +7,8 @@ class Form {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+    this.originalX = x;
+    this.originalY = y;
   }
 }
 
@@ -29,11 +31,25 @@ class Ball extends Sphere {
     super(x, y, radius);
     this.stepX = stepX;
     this.stepY = stepY;
+    this.origStepX = stepX;
+    this.origStepY = stepY;
     this.baseX = stepX;
     this.baseY = stepY;
     this.slowDown = this.slowDown.bind(this);
     this.ownerId = 0;
     this.boost = false;
+  }
+  bounce(paddleCenter) {
+    let offset = (this.x - paddleCenter) / 20;
+    this.stepX += offset;
+    if (!this.boost) {
+      this.stepY = -this.stepY * 2;
+      this.stepX *= 2;
+      this.slowDown();
+      this.boost = true;
+    } else {
+      this.stepY = -this.stepY;
+    }
   }
   bounceWall() {
     let nextX = this.x + this.stepX;
@@ -243,9 +259,55 @@ function main() {
     }
   }, 10);
 }
+/*********************** Restart function with promise ***********************/
+function restart(ball, bricks, paddles) {
+  let fullScreen = document.getElementById("full-screen");
+  let gameOver = document.getElementById("gameover-screen");
+  let okEnd = document.getElementById("ok-end");
+  let cancelEnd = document.getElementById("cancel-end");
+
+  fullScreen.style.display = "none";
+  gameOver.style.display = "flex";
+  pause = true;
+  let restart = new Promise(function(resolve, reject) {
+    okEnd.addEventListener("click", resolve);
+    cancelEnd.addEventListener("click", reject);
+  })
+    .then(function() {
+      ball.x = ball.originalX;
+      ball.y = ball.originalY;
+      ball.stepX = ball.origStepX;
+      ball.stepY = ball.origStepY;
+      ball.boost = false;
+      ball.ownerId = 0;
+      paddles.forEach(paddle => {
+        paddle.x = paddle.originalX;
+        paddle.y = paddle.originalY;
+      });
+      let playersArray = players.getPlayers();
+      playersArray.forEach(player => {
+        player.score = 0;
+      });
+      bricks.forEach(function(column) {
+        column.forEach(function(brick) {
+          brick.isVisible = true;
+        });
+      });
+      updateScore();
+      gameOver.style.display = "none";
+      fullScreen.style.display = "grid";
+      pause = false;
+    })
+    .catch(function() {
+      alert("GameOver");
+      gameOver.style.display = "none";
+      fullScreen.style.display = "grid";
+      document.location.reload();
+    });
+}
 
 /*************************** Drawing functions ********************************/
-function draw(ctx, ball, paddles, bricks, score, players) {
+function draw(ctx, ball, paddles, bricks, score) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   paddles.forEach(paddle => {
     paddle.draw(ctx, paddle.colour);
@@ -254,8 +316,7 @@ function draw(ctx, ball, paddles, bricks, score, players) {
   if (!ball.bounceWall()) {
     if (!bouncePaddles(ball, paddles)) {
       if (ball.isOut()) {
-        alert("GameOver");
-        document.location.reload();
+        restart(ball, bricks, paddles);
       }
     }
   }
@@ -273,6 +334,7 @@ function drawBricks(bricks, ctx) {
       }
     });
   });
+  return bricks;
 }
 
 /**************************** Forms functions *********************************/
@@ -297,23 +359,23 @@ function buildBricks(bricks, bricksColumns, bricksRows) {
 
 function bouncePaddles(ball, paddles) {
   let ret = false;
+  let bounced = false;
   paddles.forEach(paddle => {
     let ballBottom = ball.y + ball.radius;
     let paddleRight = paddle.x + paddle.width;
     let ballOnPaddle = paddle.y - ball.radius;
 
-    if (ball.x > paddle.x && ball.x < paddleRight && ballBottom >= paddle.y) {
+    if (
+      !bounced &&
+      (ball.x > paddle.x && ball.x < paddleRight && ballBottom >= paddle.y)
+    ) {
       if (ballBottom > paddle.y) {
         ball.y = ballOnPaddle;
       }
-      if (!ball.boost) {
-        ball.stepY = -ball.stepY * 2;
-        ball.stepX = ball.stepX * 2;
-        ball.slowDown();
-        ball.boost = true;
-      }
+      let paddleCenter = paddle.x + paddle.width / 2;
+      ball.bounce(paddleCenter);
       ball.ownerId = paddle.id;
-      console.log("ID: " + ball.ownerId);
+      bounced == true;
       ret = true;
     }
   });
